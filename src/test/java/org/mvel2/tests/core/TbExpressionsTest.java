@@ -14,6 +14,7 @@ import org.mvel2.optimizers.OptimizerFactory;
 import org.mvel2.util.MethodStub;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -2190,6 +2191,30 @@ public class TbExpressionsTest extends TestCase {
         LinkedHashMap<String, LinkedHashMap> expected = vars;
         expected.get("msg").put(sunriseName, sunriseValueNew);
         assertEquals(expected, actual);
+    }
+
+    public void testIsMethodAllowed() throws NoSuchMethodException {
+        ParserContext ctx = new ParserContext();
+        Method method = String.class.getMethod("length");
+        assertTrue(ctx.isMethodAllowed(method));
+        method = String.class.getMethod("toCharArray");
+        assertTrue(ctx.isMethodAllowed(method));
+        method = String.class.getMethod("getClass");
+        assertFalse(ctx.isMethodAllowed(method));
+        method = Map.class.getMethod("size");
+        org.junit.Assert.assertTrue(ctx.isMethodAllowed(method));
+        method = Map.class.getMethod("values");
+        assertTrue(ctx.isMethodAllowed(method));
+        Method methodModule = Map.class.getClass().getMethod("getModule");
+        assertTrue(ctx.isMethodAllowed(methodModule));
+        method = methodModule.getClass().getMethod("getClass");
+        assertFalse(ctx.isMethodAllowed(method));
+        Map.class.getClass().getMethod("getClass");
+        assertFalse(ctx.isMethodAllowed(method));
+        method = java.lang.Module.class.getMethod("getClass");
+        assertFalse(ctx.isMethodAllowed(method));
+        method = java.lang.Module.class.getMethod("getClassLoader");
+        assertFalse(ctx.isMethodAllowed(method));
     }
 
     private Object executeScript(String ex, Map vars, ExecutionContext executionContext, long timeoutMs) throws Exception {
