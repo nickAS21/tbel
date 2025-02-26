@@ -9,19 +9,15 @@ public class ExecutionLinkedHashSet<E> extends LinkedHashSet<E> implements Execu
 
     private final ExecutionContext executionContext;
 
-    private final int id;
-
     private long memorySize = 0;
 
     public ExecutionLinkedHashSet(ExecutionContext executionContext) {
         this.executionContext = executionContext;
-        this.id = executionContext.nextId();
     }
 
     public ExecutionLinkedHashSet(Set<? extends E> s, ExecutionContext executionContext) {
         super(s);
         this.executionContext = executionContext;
-        this.id = executionContext.nextId();
         for (E val : this) {
             this.memorySize += this.executionContext.onValAdd(this, val);
         }
@@ -52,11 +48,6 @@ public class ExecutionLinkedHashSet<E> extends LinkedHashSet<E> implements Execu
         }
         super.clear();
         this.memorySize = 0;
-    }
-
-    @Override
-    public int getExecutionObjectId() {
-        return this.id;
     }
 
     @Override

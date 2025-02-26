@@ -35,19 +35,15 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
 
     private final ExecutionContext executionContext;
 
-    private final int id;
-
     private long memorySize = 0;
 
     public ExecutionArrayList(ExecutionContext executionContext) {
         this.executionContext = executionContext;
-        this.id = executionContext.nextId();
     }
 
     public ExecutionArrayList(Collection<? extends E> c, ExecutionContext executionContext) {
         super(c);
         this.executionContext = executionContext;
-        this.id = executionContext.nextId();
         for (int i = 0; i < size(); i++) {
             E val = get(i);
             this.memorySize += this.executionContext.onValAdd(this, i, val);
@@ -159,11 +155,6 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
 
     public List<E> toUnmodifiable() {
         return ExecutionCollections.unmodifiableExecutionList(this, this.executionContext);
-    }
-
-    @Override
-    public int getExecutionObjectId() {
-        return id;
     }
 
     @Override

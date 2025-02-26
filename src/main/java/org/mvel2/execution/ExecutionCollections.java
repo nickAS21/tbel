@@ -41,7 +41,6 @@ public class ExecutionCollections {
         @SuppressWarnings("serial") // Conditionally serializable
         final Collection<? extends E> c;
 
-        private final int id;
         protected final ExecutionContext executionContext;
 
         UnmodifiableExecutionCollection(Collection<? extends E> c, ExecutionContext executionContext) {
@@ -51,7 +50,6 @@ public class ExecutionCollections {
                 throw new IllegalArgumentException("Collection is not ExecutionObject");
             }
             this.executionContext = executionContext;
-            this.id = executionContext.nextId();
             this.c = c;
         }
 
@@ -126,11 +124,6 @@ public class ExecutionCollections {
         @Override
         public Stream<E> parallelStream() {
             return (Stream<E>)c.parallelStream();
-        }
-
-        @Override
-        public int getExecutionObjectId() {
-            return this.id;
         }
 
         @Override
@@ -274,7 +267,6 @@ public class ExecutionCollections {
         @SuppressWarnings("serial") // Conditionally serializable
         final Map<? extends K, ? extends V> m;
 
-        private final int id;
         protected final ExecutionContext executionContext;
 
         UnmodifiableExecutionMap(Map<? extends K, ? extends V> m, ExecutionContext executionContext) {
@@ -284,7 +276,6 @@ public class ExecutionCollections {
                 throw new IllegalArgumentException("Map is not an ExecutionObject");
             }
             this.executionContext = executionContext;
-            this.id = executionContext.nextId();
             this.m = m;
         }
 
@@ -392,11 +383,6 @@ public class ExecutionCollections {
         public V merge(K key, V value,
                        BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
             throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getExecutionObjectId() {
-            return this.id;
         }
 
         @Override

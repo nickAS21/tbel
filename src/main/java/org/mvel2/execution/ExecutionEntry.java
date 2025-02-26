@@ -2,7 +2,7 @@ package org.mvel2.execution;
 
 import java.util.Map;
 
-public class ExecutionEntry<K, V> implements Map.Entry<K, V> {
+public class ExecutionEntry<K, V> implements Map.Entry<K, V>, ExecutionObject {
     public final K key;
     public V value;
 
@@ -45,5 +45,10 @@ public class ExecutionEntry<K, V> implements Map.Entry<K, V> {
     @Override
     public String toString() {
         return key + "=" + value;
+    }
+
+    @Override
+    public long memorySize() {
+        return 24;
     }
 }

@@ -3677,7 +3677,7 @@ public class TbExpressionsTest extends TestCase {
                 "        \"rssi\": 130\n" +
                 "    }\n" +
                 "};\n" +
-                "foreach(element: map.entrySet()) {\n" +
+                "foreach(element: map) {\n" +
                 "    msg1[element.key] = element.value;\n" +
                 "}\n" +
                 "return {\n" +
@@ -3701,7 +3701,7 @@ public class TbExpressionsTest extends TestCase {
                 "        \"rssi\": 130\n" +
                 "    }\n" +
                 "};\n" +
-                "foreach(element: map.entrySet()) {\n" +
+                "foreach(element: map) {\n" +
                 "    msg1[element.getKey()] = element.getValue();\n" +
                 "}\n" +
                 "return {\n" +

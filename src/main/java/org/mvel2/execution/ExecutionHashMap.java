@@ -4,6 +4,7 @@ import org.mvel2.ExecutionContext;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements ExecutionObject {
+public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements ExecutionObject, Iterable<Entry<K, V>> {
 
     private static final Comparator compByValueStringAsc = new Comparator() {
         public int compare(Object o1, Object o2) {
@@ -47,14 +48,11 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
 
     private final ExecutionContext executionContext;
 
-    private final int id;
-
     private long memorySize = 0;
 
     public ExecutionHashMap(int size, ExecutionContext executionContext) {
         super(size);
         this.executionContext = executionContext;
-        this.id = executionContext.nextId();
     }
 
     @Override
@@ -75,7 +73,7 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        Set<Entry<K, V>> executionEntries = new LinkedHashSet<>();
+        Set<Entry<K, V>> executionEntries = new ExecutionLinkedHashSet<>(this.executionContext);
         for (Entry<K, V> entry : super.entrySet()) {
             executionEntries.add(new ExecutionEntry<>(entry.getKey(), entry.getValue()));
         }
@@ -128,11 +126,6 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
     }
 
     @Override
-    public int getExecutionObjectId() {
-        return id;
-    }
-
-    @Override
     public long memorySize() {
         return memorySize;
     }
@@ -141,7 +134,6 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
     public ExecutionArrayList<V> values() {
         return new ExecutionArrayList<>(super.values(), this.executionContext);
     }
-
 
     public ExecutionArrayList<K> keys() {
         return new ExecutionArrayList<>(super.keySet(), this.executionContext);
@@ -180,5 +172,10 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
                 .stream()
                 .sorted(cmp)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+    }
+
+    @Override
+    public Iterator<Entry<K, V>> iterator() {
+        return this.entrySet().iterator();
     }
 }
