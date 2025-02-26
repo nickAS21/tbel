@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -120,6 +121,10 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
             this.memorySize -= this.executionContext.onValRemove(this, key, value);
         }
         return super.remove(key);
+    }
+
+    public Map<K, V> toUnmodifiable() {
+        return ExecutionCollections.unmodifiableExecutionMap(this, this.executionContext);
     }
 
     @Override

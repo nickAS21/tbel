@@ -143,8 +143,15 @@ public class ExecutionContext implements Serializable {
         return value;
     }
 
+    public long onValRemove(ExecutionObject obj, Object val) {
+        return this.onValRemove(obj, null, val);
+    }
+
     public long onValRemove(ExecutionObject obj, Object key, Object val) {
-        long valSize = getValueSize(key) + getValueSize(val);
+        long valSize = getValueSize(val);
+        if (key != null) {
+            valSize += getValueSize(key);
+        }
         ValueReference reference = valueReferenceMap.get(obj);
         if (reference != null) {
             reference.setSize(reference.getSize() - valSize);
@@ -153,8 +160,15 @@ public class ExecutionContext implements Serializable {
         return valSize;
     }
 
+    public long onValAdd(ExecutionObject obj, Object val) {
+        return this.onValAdd(obj, null, val);
+    }
+
     public long onValAdd(ExecutionObject obj, Object key, Object val) {
-        long valSize = getValueSize(key) + getValueSize(val);
+        long valSize = getValueSize(val);
+        if (key != null) {
+            valSize += getValueSize(key);
+        }
         ValueReference reference = valueReferenceMap.get(obj);
         if (reference != null) {
             reference.setSize(reference.getSize() + valSize);

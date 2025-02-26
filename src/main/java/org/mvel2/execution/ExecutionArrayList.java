@@ -133,6 +133,12 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
         return oldValue;
     }
 
+    @Override
+    public List<E> subList(int fromIndex, int toIndex) {
+        var list = super.subList(fromIndex, toIndex);
+        return new ExecutionArrayList(list, this.executionContext);
+    }
+
     public ExecutionArrayList<E> slice() {
         return new ExecutionArrayList<>(this, this.executionContext);
     }
@@ -149,6 +155,10 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
 
     public int length() {
         return size();
+    }
+
+    public List<E> toUnmodifiable() {
+        return ExecutionCollections.unmodifiableExecutionList(this, this.executionContext);
     }
 
     @Override
