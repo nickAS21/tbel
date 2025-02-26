@@ -3790,6 +3790,34 @@ public class TbExpressionsTest extends TestCase {
         assertEquals(expected, result.toString());
     }
 
+    public void testExecutionList_Unmodifiable() {
+        String body = "var msg = {};\n" +
+                "var original = [33, 45, \"value1\"];\n" +
+                "original.add(\"entry2\");\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "msg.result = unmodifiable;\n" +
+                "original.add(\"entry3\");\n" +
+                "msg.original = original;\n" +
+                "return {msg: msg};";
+        Object result = executeScript(body);
+        String expected = "{msg={result=[33, 45, value1, entry2, entry3], original=[33, 45, value1, entry2, entry3]}}";
+        assertEquals(expected, result.toString());
+
+        String errorArray = "Error: unmodifiable.add(\"entry2\")";
+        body = "var msg = {};\n" +
+                "var original = [33, 45, \"value1\"];\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "unmodifiable.add(\"entry2\");\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        try {
+            executeScript(body);
+            fail("Should throw CompileException");
+        } catch (CompileException e) {
+            assertTrue(e.getMessage().contains(errorArray));
+        }
+    }
+
     public void testExecutionHashMap_Unmodifiable() {
         String body = "var msg = {};\n" +
                 "var original = {};\n" +
@@ -3827,7 +3855,6 @@ public class TbExpressionsTest extends TestCase {
             assertTrue(e.getMessage().contains(errorArray));
         }
     }
-
 
     public void testExecutionHashMapEntrySet_Unmodifiable() {
         String body = "var msg = {};\n" +
