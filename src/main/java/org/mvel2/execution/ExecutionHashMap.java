@@ -162,6 +162,9 @@ public class ExecutionHashMap<K, V> extends LinkedHashMap<K, V> implements Execu
                 mapSlice.put(entry.getKey(), entry.getValue());
             }
             ++index;
+            if (index >= end) {
+                break;
+            }
         }
         return mapSlice;
     }

@@ -1891,6 +1891,149 @@ public class TbMapArrayListExpressionsTest extends TestCase {
     }
 
 
+    public void testExecutionArrayList_Unmodifiable() {
+        String body = "var msg = {};\n" +
+                "var original = [];\n" +
+                "original.add(0x35);\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        Object result = executeScript(body);
+        String expected = "{msg={result=[53]}}";
+        assertEquals(expected, result.toString());
+
+        String errorArray = "Error: unmodifiable.add(0x35): List is unmodifiable";
+        body = "var msg = {};\n" +
+                "var original = [];\n" +
+                "original.add(0x67);\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "unmodifiable.add(0x35);\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        try {
+            executeScript(body);
+            fail("Should throw CompileException");
+        } catch (CompileException e) {
+            assertTrue(e.getMessage().contains(errorArray));
+        }
+    }
+
+    public void testExecutionHashMap_EntrySet() {
+        String  body = "var msg = {};\n" +
+                "var original = {};\n" +
+                "var list1 = [13, 15];\n" +
+                "var list2 = [23, 25];\n" +
+                "original.put(\"entry1\", list1);\n" +
+                "original.put(\"entry2\", list2);\n" +
+                "var result1 = original.entrySet();\n" +
+                "result1.add(25);\n" +
+                "var list3 = [33, 35];\n" +
+                "original.put(\"entry3\", list3);\n" +
+                "msg.original = original;\n" +
+                "msg.result1 = result1;\n" +
+                "msg.result2 = original.entrySet();\n" +
+                "return {msg: msg};";
+        Object result = executeScript(body);
+        String expected = "{msg={original={entry1=[13, 15], entry2=[23, 25], entry3=[33, 35]}, result1=[entry1=[13, 15], entry2=[23, 25], 25], result2=[entry1=[13, 15], entry2=[23, 25], entry3=[33, 35]]}}";
+        assertEquals(expected, result.toString());
+    }
+
+    public void testExecutionList_Unmodifiable() {
+        String body = "var msg = {};\n" +
+                "var original = [33, 45, \"value1\"];\n" +
+                "original.add(\"entry2\");\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "msg.result = unmodifiable;\n" +
+                "original.add(\"entry3\");\n" +
+                "msg.original = original;\n" +
+                "return {msg: msg};";
+        Object result = executeScript(body);
+        String expected = "{msg={result=[33, 45, value1, entry2, entry3], original=[33, 45, value1, entry2, entry3]}}";
+        assertEquals(expected, result.toString());
+
+        String errorArray = "Error: unmodifiable.add(\"entry2\"): List is unmodifiable";
+        body = "var msg = {};\n" +
+                "var original = [33, 45, \"value1\"];\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "unmodifiable.add(\"entry2\");\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        try {
+            executeScript(body);
+            fail("Should throw CompileException");
+        } catch (CompileException e) {
+            assertTrue(e.getMessage().contains(errorArray));
+        }
+    }
+
+    public void testExecutionHashMap_Unmodifiable() {
+        String body = "var msg = {};\n" +
+                "var original = {};\n" +
+                "original.putIfAbsent(\"entry1\", 73);\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        Object result = executeScript(body);
+        String expected = "{msg={result={entry1=73}}}";
+        assertEquals(expected, result.toString());
+
+        body = "var msg = {};\n" +
+                "var original = {};\n" +
+                "original.put(\"temperature1\", 73);\n" +
+                "var entrySet = original.entrySet();\n" +
+                "var unmodifiable = entrySet.toUnmodifiable();\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        result = executeScript(body);
+        expected = "{msg={result=[temperature1=73]}}";
+        assertEquals(expected, result.toString());
+
+        String errorArray = "Error: unmodifiable.put(\"temperature1\", 96): Map is unmodifiable";
+        body = "var msg = {};\n" +
+                "var original = {};\n" +
+                "original.humidity = 73;\n" +
+                "var unmodifiable = original.toUnmodifiable();\n" +
+                "unmodifiable.put(\"temperature1\", 96);\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        try {
+            executeScript(body);
+            fail("Should throw CompileException");
+        } catch (CompileException e) {
+            assertTrue(e.getMessage().contains(errorArray));
+        }
+    }
+
+    public void testExecutionHashMapEntrySet_Unmodifiable() {
+        String body = "var msg = {};\n" +
+                "var original = {};\n" +
+                "original.put(\"entry1\", 73);\n" +
+                "var entrySet1 = original.entrySet();\n" +
+                "entrySet1.add(25);\n" +
+                "msg.result = entrySet1;\n" +
+                "return {msg: msg};";
+        Object result = executeScript(body);
+        String expected = "{msg={result=[entry1=73, 25]}}";
+        assertEquals(expected, result.toString());
+
+        String errorArray = "Error: unmodifiable.add(25): List is unmodifiable";
+        body = "var msg = {};\n" +
+                "var original = {};\n" +
+                "original.put(\"temperature1\", 73);\n" +
+                "var entrySet = original.entrySet();\n" +
+                "var unmodifiable = entrySet.toUnmodifiable();\n" +
+                "unmodifiable.add(25);\n" +
+                "msg.result = unmodifiable;\n" +
+                "return {msg: msg};";
+        try {
+            executeScript(body);
+            fail("Should throw CompileException");
+        } catch (CompileException e) {
+            assertTrue(e.getMessage().contains(errorArray));
+        }
+    }
+
+
     private Object executeScript(String ex) {
         Serializable compiled = compileExpression(ex, new ParserContext());
         this.currentExecutionContext = new ExecutionContext(this.parserConfig);
