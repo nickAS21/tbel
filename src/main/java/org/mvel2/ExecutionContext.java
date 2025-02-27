@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,10 +52,6 @@ public class ExecutionContext implements Serializable {
         this.parserConfig = parserConfig;
         this.maxAllowedMemory = maxAllowedMemory;
         this.maxAllowedMethodArgs = maxAllowedMethodArgs;
-    }
-
-    public int nextId() {
-        return this.idSequence.incrementAndGet();
     }
 
     public void checkExecution() {
