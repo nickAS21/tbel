@@ -2,7 +2,9 @@ package org.mvel2.execution;
 
 import org.mvel2.ExecutionContext;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ExecutionLinkedHashSet<E> extends LinkedHashSet<E> implements ExecutionObject {
@@ -53,5 +55,10 @@ public class ExecutionLinkedHashSet<E> extends LinkedHashSet<E> implements Execu
     @Override
     public long memorySize() {
         return this.memorySize;
+    }
+
+    public List<E> toUnmodifiable() {
+        return ExecutionCollections.unmodifiableExecutionList(new ExecutionArrayList(
+                new ArrayList<>(this), this.executionContext), this.executionContext);
     }
 }

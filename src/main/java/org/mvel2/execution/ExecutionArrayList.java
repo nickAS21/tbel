@@ -9,28 +9,30 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.mvel2.util.ArrayTools.initEndIndex;
+import static org.mvel2.util.ArrayTools.initStartIndex;
+
 public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObject {
 
-    private static final Comparator stringCompDesc = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    private static final Comparator STRING_COMP_DESC = (o1, o2) -> {
+        String first = String.valueOf(o1);
+        String second = String.valueOf(o2);
+        return second.compareTo(first);
+    };
+    private static final Comparator STRING_COMP_ASC = (o1, o2) -> {
             String first = String.valueOf(o1);
             String second = String.valueOf(o2);
-            return second.compareTo(first);
-        }
+            return first.compareTo(second);
     };
-    private static final Comparator numericCompAsc = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    private static final Comparator NUMERIC_COMP_ASC = (o1, o2) -> {
             Double first = Double.parseDouble(String.valueOf(o1));
             Double second = Double.parseDouble(String.valueOf(o2));
             return first.compareTo(second);
-        }
     };
-    private static final Comparator numericCompDesc = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    private static final Comparator NUMERIC_COMP_DESC = (o1, o2) -> {
             Double first = Double.parseDouble(String.valueOf(o1));
             Double second = Double.parseDouble(String.valueOf(o2));
             return second.compareTo(first);
-        }
     };
 
     private final ExecutionContext executionContext;
@@ -67,8 +69,12 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
         return remove(0);
     }
 
-    public void unshift(E e) {
-        add(0, e);
+    public void unshift(E... ee) {
+        if (ee.length > 0) {
+            for (int i = 0; i < ee.length; i++) {
+                add(i, ee[i]);
+            }
+        }
     }
 
     @Override
@@ -144,8 +150,8 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
     }
 
     public ExecutionArrayList<E> slice(int start, int end) {
-        start = initStartIndex(start);
-        end = initEndIndex(end);
+        start = initStartIndex(start, this);
+        end = initEndIndex(end, this);
         return new ExecutionArrayList<>(this.subList(start, end), this.executionContext);
     }
 
@@ -186,10 +192,10 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
     }
 
     public void sort(boolean asc) {
-        if (validateClazzInArrayIsOnlyString()) {
-            super.sort(asc ? null : stringCompDesc);
+        if (validateClazzInArrayIsOnlyNumber()) {
+            super.sort(asc ? NUMERIC_COMP_ASC : NUMERIC_COMP_DESC);
         } else {
-            super.sort(asc ? numericCompAsc : numericCompDesc);
+            super.sort(asc ? STRING_COMP_ASC : STRING_COMP_DESC);
         }
     }
 
@@ -224,7 +230,7 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
     }
 
     public List splice(int start, int deleteCount, E... values) {
-        start = initStartIndex(start);
+        start = initStartIndex(start, this);
         deleteCount = deleteCount < 0 ? 0 : Math.min(deleteCount, (this.size() - start));
         List<E> removed = new ArrayList<>();
         while (deleteCount > 0) {
@@ -239,7 +245,9 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
     }
 
     public List toSpliced(int start) {
-        return this.toSpliced(start, 0);
+        ExecutionArrayList newList = this.slice();
+        newList.splice(start);
+        return newList;
     }
 
     public List toSpliced(int start, int deleteCount, E... values) {
@@ -268,8 +276,8 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
     }
 
     public List fill(E value, int start, int end) {
-        start = initStartIndex(start);
-        end = initEndIndex(end);
+        start = initStartIndex(start, this);
+        end = initEndIndex(end, this);
 
         if (start < this.size() && end > start) {
             for (int i = start; i < end; ++i) {
@@ -279,19 +287,16 @@ public class ExecutionArrayList<E> extends ArrayList<E> implements ExecutionObje
         return this;
     }
 
-    public boolean validateClazzInArrayIsOnlyString() {
-        return !super.stream().anyMatch(e -> !(e instanceof String));
+    public boolean validateClazzInArrayIsOnlyNumber() {
+        return !super.stream().anyMatch(e -> !validateClazzInArrayIsOnlyNumber(e));
     }
 
-    private int initStartIndex(int start) {
-        return start < -this.size() ? 0 :
-                start < 0 ? start + this.size() :
-                        start;
-    }
-
-    private int initEndIndex(int end) {
-        return end < -this.size() ? 0 :
-                end < 0 ? end + this.size() :
-                        Math.min(end, this.size());
+    public boolean validateClazzInArrayIsOnlyNumber(Object e) {
+        try {
+            Double.parseDouble(String.valueOf(e));
+            return true;
+        } catch (Exception e1) {
+            return false;
+        }
     }
 }
