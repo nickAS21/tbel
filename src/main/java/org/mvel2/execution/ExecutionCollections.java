@@ -53,6 +53,14 @@ public class ExecutionCollections {
             this.c = c;
         }
 
+        protected String collectionTitle() {
+            return "Collection";
+        }
+
+        protected UnsupportedOperationException unmodifiableException() {
+            return new UnsupportedOperationException(collectionTitle() + " is unmodifiable");
+        }
+
         public int size()                          {return c.size();}
         public boolean isEmpty()                   {return c.isEmpty();}
         public boolean contains(Object o)          {return c.contains(o);}
@@ -68,7 +76,7 @@ public class ExecutionCollections {
                 public boolean hasNext() {return i.hasNext();}
                 public E next()          {return i.next();}
                 public void remove() {
-                    throw new UnsupportedOperationException();
+                    throw unmodifiableException();
                 }
                 @Override
                 public void forEachRemaining(Consumer<? super E> action) {
@@ -79,26 +87,26 @@ public class ExecutionCollections {
         }
 
         public boolean add(E e) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public boolean remove(Object o) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         public boolean containsAll(Collection<?> coll) {
             return c.containsAll(coll);
         }
         public boolean addAll(Collection<? extends E> coll) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public boolean removeAll(Collection<?> coll) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public boolean retainAll(Collection<?> coll) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public void clear() {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         // Override default methods in Collection
@@ -108,7 +116,7 @@ public class ExecutionCollections {
         }
         @Override
         public boolean removeIf(Predicate<? super E> filter) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         @SuppressWarnings("unchecked")
         @Override
@@ -158,6 +166,12 @@ public class ExecutionCollections {
         UnmodifiableExecutionSet(Set<? extends E> s, ExecutionContext executionContext)     {
             super(UnmodifiableExecutionSet.checkExecutionSet(s, executionContext), executionContext);
         }
+
+        @Override
+        protected String collectionTitle() {
+            return "Set";
+        }
+
         public boolean equals(Object o) {return o == this || c.equals(o);}
         public int hashCode()           {return c.hashCode();}
     }
@@ -183,32 +197,37 @@ public class ExecutionCollections {
             this.list = list;
         }
 
+        @Override
+        protected String collectionTitle() {
+            return "List";
+        }
+
         public boolean equals(Object o) {return o == this || list.equals(o);}
         public int hashCode()           {return list.hashCode();}
 
         public E get(int index) {return list.get(index);}
         public E set(int index, E element) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public void add(int index, E element) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public E remove(int index) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public int indexOf(Object o)            {return list.indexOf(o);}
         public int lastIndexOf(Object o)        {return list.lastIndexOf(o);}
         public boolean addAll(int index, Collection<? extends E> c) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public void replaceAll(UnaryOperator<E> operator) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         @Override
         public void sort(Comparator<? super E> c) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         public ListIterator<E> listIterator()   {return listIterator(0);}
@@ -226,13 +245,13 @@ public class ExecutionCollections {
                 public int previousIndex()   {return i.previousIndex();}
 
                 public void remove() {
-                    throw new UnsupportedOperationException();
+                    throw unmodifiableException();
                 }
                 public void set(E e) {
-                    throw new UnsupportedOperationException();
+                    throw unmodifiableException();
                 }
                 public void add(E e) {
-                    throw new UnsupportedOperationException();
+                    throw unmodifiableException();
                 }
 
                 @Override
@@ -279,6 +298,14 @@ public class ExecutionCollections {
             this.m = m;
         }
 
+        protected String collectionTitle() {
+            return "Map";
+        }
+
+        protected UnsupportedOperationException unmodifiableException() {
+            return new UnsupportedOperationException(collectionTitle() + " is unmodifiable");
+        }
+
         public int size()                        {return m.size();}
         public boolean isEmpty()                 {return m.isEmpty();}
         public boolean containsKey(Object key)   {return m.containsKey(key);}
@@ -286,16 +313,16 @@ public class ExecutionCollections {
         public V get(Object key)                 {return m.get(key);}
 
         public V put(K key, V value) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public V remove(Object key) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public void putAll(Map<? extends K, ? extends V> m) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
         public void clear() {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         private transient Set<K> keySet;
@@ -339,50 +366,50 @@ public class ExecutionCollections {
 
         @Override
         public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public V putIfAbsent(K key, V value) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public boolean remove(Object key, Object value) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public boolean replace(K key, V oldValue, V newValue) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public V replace(K key, V value) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public V computeIfPresent(K key,
                                   BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public V compute(K key,
                          BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
         public V merge(K key, V value,
                        BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
-            throw new UnsupportedOperationException();
+            throw unmodifiableException();
         }
 
         @Override
@@ -406,6 +433,11 @@ public class ExecutionCollections {
             @SuppressWarnings({"unchecked"})
             UnmodifiableExecutionEntrySet(Set<? extends Map.Entry<? extends K, ? extends V>> s, ExecutionContext executionContext) {
                 super((Set<Map.Entry<K, V>>)s, executionContext);
+            }
+
+            @Override
+            protected String collectionTitle() {
+                return "EntrySet";
             }
 
             static <K, V> Consumer<Map.Entry<? extends K, ? extends V>> entryConsumer(
@@ -499,7 +531,7 @@ public class ExecutionCollections {
                         return new UnmodifiableEntry<>(i.next());
                     }
                     public void remove() {
-                        throw new UnsupportedOperationException();
+                        throw unmodifiableException();
                     }
                     public void forEachRemaining(Consumer<? super Map.Entry<K, V>> action) {
                         Objects.requireNonNull(action);
@@ -576,7 +608,7 @@ public class ExecutionCollections {
              * an ill-behaved Map.Entry that attempts to modify another
              * Map Entry when asked to perform an equality check.
              */
-            private static class UnmodifiableEntry<K,V> implements Map.Entry<K,V> {
+            private static class UnmodifiableEntry<K,V> implements Map.Entry<K,V>, ExecutionObject {
                 private Map.Entry<? extends K, ? extends V> e;
 
                 UnmodifiableEntry(Map.Entry<? extends K, ? extends V> e)
@@ -585,7 +617,7 @@ public class ExecutionCollections {
                 public K getKey()        {return e.getKey();}
                 public V getValue()      {return e.getValue();}
                 public V setValue(V value) {
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Entry is not modifiable");
                 }
                 public int hashCode()    {return e.hashCode();}
                 public boolean equals(Object o) {
@@ -596,6 +628,11 @@ public class ExecutionCollections {
                             && eq(e.getValue(), t.getValue());
                 }
                 public String toString() {return e.toString();}
+
+                @Override
+                public long memorySize() {
+                    return 4;
+                }
             }
         }
     }
